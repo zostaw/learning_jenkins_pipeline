@@ -20,7 +20,7 @@ kind: Pod
 spec:
   containers:
   - name: shell
-    image: ubuntu
+    image: alpine:3.16
     command:
     - sleep
     args:
