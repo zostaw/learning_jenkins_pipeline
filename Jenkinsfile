@@ -4,7 +4,7 @@
 Coppied from https://github.com/jenkinsci/pipeline-examples/jenkinsfile-examples/nodejs-build-test-deploy-docker-notify/Jenkinsfile
 */
 
-node('node') {
+node('Built-In Node') {
 
 
     currentBuild.result = "SUCCESS"
