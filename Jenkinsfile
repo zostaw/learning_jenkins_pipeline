@@ -22,7 +22,7 @@ node('main-node') {
 
          print "Environment will be : ${env.NODE_ENV}"
 
-         sh 'node -v'
+         sh 'npm help'
          sh 'npm prune'
          sh 'npm install'
          sh 'npm test'
