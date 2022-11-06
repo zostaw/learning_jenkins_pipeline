@@ -7,6 +7,7 @@ pipeline {
     environment {
         IMAGE_NAME = "zostaw/numpy"
         IMAGE_TAG = "python-numpy-1.0"
+        dockerhub = credentials("dockerhub")
     }
     agent {
         kubernetes {
@@ -55,6 +56,7 @@ spec:
         stage('Deploy to dockerhub') {
             steps {
                 echo 'Deploying....'
+                sh 'echo $dockerhub_PWD | docker login -u $dockerhub_USR --password-stdin'
                 sh 'docker image push $IMAGE_NAME:$IMAGE_TAG'
             }
         }
