@@ -29,10 +29,6 @@ spec:
     - sleep
     args:
     - infinity
-  - name: docker
-    image: docker:20.10.21-alpine3.16
-    command:
-    - cat
     tty: true
     volumeMounts:
       - mountPath: /var/run/docker.sock
@@ -51,22 +47,15 @@ spec:
     }
 
       stages {
-        stage('Build within k8s') {
+        stage('Build docker image') {
             steps {
                 sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
             }
         }
-        stage('Build inside docker') {
-            steps {
-                echo 'Building..'
-                container('docker') {
-                    sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
-                }
-}
-        }
-        stage('Deploy') {
+        stage('Deploy to dockerhub') {
             steps {
                 echo 'Deploying....'
+                sh 'docker image push $IMAGE_NAME:$IMAGE_TAG'
             }
         }
     }
