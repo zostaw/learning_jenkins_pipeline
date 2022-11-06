@@ -20,7 +20,7 @@ ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 0
 
 # Add app
-COPY ./app /app/app
+#COPY ./app /app/app
 WORKDIR /app
 
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
