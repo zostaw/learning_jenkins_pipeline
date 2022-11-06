@@ -5,8 +5,8 @@ pipeline {
     tools {nodejs "node"}
 
     environment {
-        IMAGE_NAME = "zostaw/home-page"
-        IMAGE_TAG = "python-app-1.0"
+        IMAGE_NAME = "zostaw/numpy"
+        IMAGE_TAG = "python-numpy-1.0"
     }
     agent {
         kubernetes {
@@ -24,11 +24,23 @@ kind: Pod
 spec:
   containers:
   - name: shell
-    image: python:3.10.5-alpine
+    image: docker:20.10.21-alpine3.16
     command:
     - sleep
     args:
     - infinity
+  - name: docker
+    image: docker:20.10.21-alpine3.16
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - mountPath: /var/run/docker.sock
+        name: docker-sock
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
 '''
             // Can also wrap individual steps:
             // container('shell') {
@@ -39,31 +51,18 @@ spec:
     }
 
       stages {
-        stage('Pre script') {
+        stage('Build within k8s') {
             steps {
-                sh 'pwd'
-                sh 'ls -las'
-                sh 'apk --update add bash vim g++ gcc musl-dev linux-headers'
-                sh 'pip install --upgrade pip'
-                sh 'pip install --no-cache-dir -r ./requirements.txt'
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Build') {
-            agent{
-                docker {
-                    image "docker:20.10.21-alpine3.16"
-                }
-           }
+        stage('Build inside docker') {
             steps {
                 echo 'Building..'
-                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
-                sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
-            }
+                container('docker') {
+                    sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                }
+}
         }
         stage('Deploy') {
             steps {
