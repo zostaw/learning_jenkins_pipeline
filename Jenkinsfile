@@ -56,7 +56,7 @@ spec:
         stage('Deploy to dockerhub') {
             steps {
                 echo 'Deploying....'
-                sh 'echo $dockerhub_PWD | docker login -u $dockerhub_USR --password-stdin'
+                sh 'docker login -u $dockerhub_USR -p $dockerhub_PWD'
                 sh 'docker image push $IMAGE_NAME:$IMAGE_TAG'
             }
         }
